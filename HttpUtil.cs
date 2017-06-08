@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
 
-namespace test1
+namespace cn12306
 {
     class HttpUtil
     {

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using test1;
 
 namespace cn12306
 {
