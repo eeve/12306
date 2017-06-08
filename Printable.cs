@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace cn12306
 {
-    public static class TableParser
+    public static class Printable
     {
         public static string ToStringTable<T>(
             this IEnumerable<T> values,
