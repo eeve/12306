@@ -239,7 +239,7 @@ namespace cn12306 {
 		public bool status { get; set; }
 		public int httpstatus { get; set; }
 		public TicketDataListModel data { get; set; }
-    public List<object> messages { get; set; }
+    	public List<object> messages { get; set; }
 
 		public List<TicketDataModel> GetTickets() {
 			if(!this.status) {
@@ -317,6 +317,16 @@ namespace cn12306 {
 		public string code { get; set; } // 站编号
 		public string pinyin { get; set; } // 站名全拼
 		public string initial { get; set; } // 声母
+	}
+
+	static class ForEachExtensions
+	{
+		public static void ForEachWithIndex<T>(this IEnumerable<T> enumerable, Action<T, int> handler)
+		{
+			int idx = 0;
+			foreach (T item in enumerable)
+				handler(item, idx++);
+		}
 	}
 
 }

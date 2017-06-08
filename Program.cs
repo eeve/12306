@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using cn12306;
 
-namespace test1
+namespace cn12306
 {
     class Program
     {
