@@ -59,15 +59,18 @@ namespace cn12306
                     string cell = arrValues[rowIndex, colIndex];
                     cell = cell.PadRight(maxColumnsWidth[colIndex] - ChineseCount(cell)); // 有中文，则减去中文字符数
                     Console.Write(" | ");
-                    if( (rowIndex > 0 && colIndex > 5 && colIndex < 17 && !"--".Equals(cell.Trim()) && !"无".Equals(cell.Trim())) || "Y".Equals(cell.Trim()) ) {
-						Console.ForegroundColor = ConsoleColor.Black;
+                    if ((rowIndex > 0 && colIndex > 5 && colIndex < 17 && !"--".Equals(cell.Trim()) && !"无".Equals(cell.Trim())) || "Y".Equals(cell.Trim()))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Black;
                         Console.BackgroundColor = ConsoleColor.Green;
-						Console.Write(cell);
-						Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(cell);
+                        Console.ForegroundColor = ConsoleColor.White;
                         Console.BackgroundColor = ConsoleColor.Black;
-					} else {
-						Console.Write(cell);
-					}
+                    }
+                    else
+                    {
+                        Console.Write(cell);
+                    }
                     // Console.Write(cell);
                 }
 
