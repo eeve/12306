@@ -70,7 +70,7 @@ namespace cn12306
             {
                 throw new Exception("错误的到达站");
             }
-            Console.WriteLine($"旅程：{from_station} ({from_station_code}) -> {to_station} ({to_station_code})");
+
             if (!IsDate(date))
             {
                 date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -87,14 +87,14 @@ namespace cn12306
                 Console.WriteLine($"日期：{date}");
             }
 
+            Console.WriteLine($"旅程：{from_station} ({from_station_code}) -> {to_station} ({to_station_code})");
+
             // 列车类型
             string[] train_types = null;
             if (!string.IsNullOrWhiteSpace(types))
             {
                 train_types = types.Split(',');
             }
-
-            Console.WriteLine();
 
             Task<string> task;
             while (true)
@@ -121,6 +121,9 @@ namespace cn12306
                 bool train_type = train_types != null ? train_types.Contains(s.queryLeftNewDTO.station_train_code.Substring(0, 1)) : true;
                 return to && arrive && train_type;
             }).ToList();
+
+            Console.WriteLine($"根据各筛选条件本次共查询到{list.Count}趟列车，详细列表如下：");
+            Console.WriteLine();
 
             List<string> columns = new List<string>{
                 "车次", "出发站", "到达站", "出发时间", "到达时间", "历时", "商务座", "特等座", "一等座", "二等座", "高级软卧", "软卧", "硬卧", "软座", "硬座", "无座", "其他", "是否可预定"
