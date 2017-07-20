@@ -39,7 +39,7 @@ namespace cn12306
         {
             if (inBreakTime())
             {
-                Console.WriteLine("7:00 - 23:00可查票，现在太晚了！");
+                Console.WriteLine("12306.cn网站每日06:00~23:00提供服务！");
                 return;
             }
 
@@ -70,8 +70,7 @@ namespace cn12306
             {
                 throw new Exception("错误的到达站");
             }
-
-            if (!IsDate(date))
+            if (!IsDate(date) || date.Equals("now"))
             {
                 date = DateTime.Now.ToString("yyyy-MM-dd");
                 Console.WriteLine($"本次查询采用默认日期：{date} (今日)");
@@ -121,7 +120,8 @@ namespace cn12306
                 bool train_type = train_types != null ? train_types.Contains(s.queryLeftNewDTO.station_train_code.Substring(0, 1)) : true;
                 return to && arrive && train_type;
             }).ToList();
-
+            
+            Console.WriteLine("点击购票: https://kyfw.12306.cn/otn/login/init");
             Console.WriteLine($"根据各筛选条件本次共查询到{list.Count}趟列车，详细列表如下：");
             Console.WriteLine();
 
