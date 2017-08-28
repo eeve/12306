@@ -47,7 +47,7 @@ namespace cn12306
             return Path.GetDirectoryName(type.Assembly.Location);
         }
 
-        public void Query(string from_station, string to_station, string date = null, string types = null)
+        public void Query(string from_station, string to_station, string date = null, string types = null, int orderby = 0)
         {
             if (inBreakTime())
             {
@@ -82,6 +82,12 @@ namespace cn12306
             {
                 throw new Exception("错误的到达站");
             }
+
+            DateTime maxDate = DateTime.Now.AddDays(29);
+            string minDateStr = DateTime.Now.ToString("yyyy-MM-dd");
+            string maxDateStr = maxDate.ToString("yyyy-MM-dd");
+            Console.WriteLine($"预售日期范围：{minDateStr} 至 {maxDateStr}");
+
             if (!IsDate(date) || date.Equals("now"))
             {
                 date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -94,10 +100,13 @@ namespace cn12306
                 {
                     throw new Exception("不正确的日期，日期不能小于今日");
                 }
+                if (DateTime.Parse(date) > maxDate) {
+                    throw new Exception("不正确的日期，查询日期不在预售日期范围内");
+                }
                 date = DateTime.Parse(date).ToString("yyyy-MM-dd");
                 Console.WriteLine($"日期：{date}");
             }
-
+            
             Console.WriteLine($"旅程：{from_station} ({from_station_code}) -> {to_station} ({to_station_code})");
 
             // 列车类型
@@ -131,6 +140,21 @@ namespace cn12306
                 bool arrive = strict_to_station ? to_station.Equals(s.queryLeftNewDTO.to_station_name) : true;
                 bool train_type = train_types != null ? train_types.Contains(s.queryLeftNewDTO.station_train_code.Substring(0, 1)) : true;
                 return to && arrive && train_type;
+            }).OrderBy(o => {
+                switch(orderby) {
+                    case 1:
+                        return o.queryLeftNewDTO.start_time;
+                        break;
+                    case 2:
+                        return o.queryLeftNewDTO.arrive_time;
+                        break;
+                    case 3:
+                        return o.queryLeftNewDTO.lishi;
+                        break;
+                    default:
+                        return null;
+                        break;
+                }
             }).ToList();
             
             Console.WriteLine("点击购票: https://kyfw.12306.cn/otn/login/init");
