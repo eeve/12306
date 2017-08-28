@@ -19,7 +19,8 @@ namespace cn12306
             }
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             try {
-                Ticket.Query(
+                Ticket ticket = new Ticket();
+                ticket.Query(
                     from_station: args[0],
                     to_station: args[1],
                     date: args.Length >= 3 ? args[2] : null,
@@ -27,7 +28,7 @@ namespace cn12306
                 );
             } catch(Exception e) {
                 Console.WriteLine($"ERR: {e.Message}");
-            }
+            }   
         }
 
     }

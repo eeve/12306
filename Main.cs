@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -11,9 +12,11 @@ namespace cn12306
 
     class Ticket
     {
-        static string basicUrl = "https://kyfw.12306.cn/otn/leftTicket/query";
+        private static string basicUrl = "https://kyfw.12306.cn/otn/leftTicket/query";
 
-        static HttpUtil httpUtil = new HttpUtil();
+        private static HttpUtil httpUtil = new HttpUtil();
+
+        private static string station_cache_file = null;
 
         private static bool IsDate(string s)
         {
@@ -35,7 +38,16 @@ namespace cn12306
             }
         }
 
-        public static void Query(string from_station, string to_station, string date = null, string types = null)
+        public Ticket() {
+            station_cache_file = GetAppPath() + "/.station_cache";
+        }
+
+        private static string GetAppPath() {
+            dynamic type = typeof(Program);
+            return Path.GetDirectoryName(type.Assembly.Location);
+        }
+
+        public void Query(string from_station, string to_station, string date = null, string types = null)
         {
             if (inBreakTime())
             {
@@ -177,21 +189,50 @@ namespace cn12306
 
         }
 
-        private static Dictionary<string, string> StationMaps()
+        private static Dictionary<string, string> ReadFile(string path)
         {
-            Task<string> task = httpUtil.Get("https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9013");
-            MatchCollection mc = Regex.Matches(task.Result, @"@\w+\|([\u4e00-\u9fa5]+)\|(\w+)\|(\w+)\|(\w+)\|\d+");
+            StreamReader sr = File.OpenText(path);
+            string nextLine;
             Dictionary<string, string> map = new Dictionary<string, string>();
-            foreach (Match item in mc)
+            while ((nextLine = sr.ReadLine()) != null)
             {
-                GroupCollection gc = item.Groups;
-                // name = gc[1].Value,
-                // code = gc[2].Value,
-                // pinyin = gc[3].Value,
-                // initial = gc[4].Value
-                map.Add(gc[1].Value, gc[2].Value);
+                map.Add(nextLine.Split('@')[0], nextLine.Split('@')[1]);
             }
             return map;
+        }
+
+        private static void SaveFile(string path, string content)
+        {
+            File.WriteAllText(path, content);
+        }
+
+        private static Dictionary<string, string> StationMaps()
+        {
+            Dictionary<string, string> map = null;
+            try {
+                map = ReadFile(station_cache_file);
+            } catch {
+            }
+            if(map != null && map.Count > 0) {
+                return map;
+            } else {
+                string temp = "";
+                Task<string> task = httpUtil.Get("https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9013");
+                MatchCollection mc = Regex.Matches(task.Result, @"@\w+\|([\u4e00-\u9fa5]+)\|(\w+)\|(\w+)\|(\w+)\|\d+");
+                map = new Dictionary<string, string>();
+                foreach (Match item in mc)
+                {
+                    GroupCollection gc = item.Groups;
+                    // name = gc[1].Value,
+                    // code = gc[2].Value,
+                    // pinyin = gc[3].Value,
+                    // initial = gc[4].Value
+                    map.Add(gc[1].Value, gc[2].Value);
+                    temp += $"{gc[1].Value}@{gc[2].Value}\n";
+                }
+                SaveFile(station_cache_file, temp);
+                return map;
+            }
         }
 
         private static bool inBreakTime()
